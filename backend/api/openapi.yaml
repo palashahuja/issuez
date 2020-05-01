@@ -252,10 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
                   $ref: '#/components/schemas/ProjectDetail'
-                x-content-type: application/json
         default:
           description: Error
           content:
