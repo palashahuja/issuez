@@ -1,0 +1,579 @@
+openapi: 3.0.0
+info:
+  title: Issuez Backend App
+  version: 0.0.1
+servers:
+- url: https://localhost:10010/
+paths:
+  /issues:
+    post:
+      description: Creates a new issue
+      operationId: createIssue
+      requestBody:
+        description: all the relevant details for creating a new issue
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueResponse'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /issues/{issueid}:
+    get:
+      description: Returns the information particular to an issue
+      operationId: getIssueDetails
+      parameters:
+      - name: issueid
+        in: path
+        description: the relevant issue id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+    put:
+      description: Partially updates the issue
+      operationId: updateIssueDetails
+      parameters:
+      - name: issueid
+        in: path
+        description: the relevant issue id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: the information regarding issue details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueDetail'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      x-swagger-router-controller: Default
+  /issues/history/{issueid}:
+    get:
+      description: Get all the previous information related to an issue
+      operationId: getIssueHistoryDetails
+      parameters:
+      - name: issueid
+        in: path
+        description: gets the issue history of the particular issue
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueHistoryResponse'
+                x-content-type: application/json
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /issues/user/{userid}:
+    get:
+      description: Get all the issues for a particular user
+      operationId: getIssueAssignedUser
+      parameters:
+      - name: userid
+        in: path
+        description: gets the issues assigned to a user
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueResponse'
+                x-content-type: application/json
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /issues/assigned/{issueid}:
+    get:
+      description: Get all the assigned users for a particular issue
+      operationId: getUserAssignedIssue
+      parameters:
+      - name: issueid
+        in: path
+        description: gets all the users assigned to an issue
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetail'
+                x-content-type: application/json
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /issues/{issueid}/user/{userid}:
+    post:
+      description: Assign a user to a particular issue
+      operationId: assignUserToIssue
+      parameters:
+      - name: issueid
+        in: path
+        description: the issueid to which the user needs to be assigned
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: userid
+        in: path
+        description: the relevant user id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /project:
+    post:
+      description: creates a new project
+      operationId: createNewProject
+      requestBody:
+        description: the required details about creating a new project
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FullProjectDetail'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /project/{projectid}:
+    get:
+      description: gets all the relevant details for the project
+      operationId: getProjectDetails
+      parameters:
+      - name: projectid
+        in: path
+        description: the project id for which the details need to be listed
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectDetail'
+                x-content-type: application/json
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+    put:
+      description: updates the details for the particular project
+      operationId: updateProjectDetails
+      parameters:
+      - name: projectid
+        in: path
+        description: the project id for which the details need to be listed
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInputDetail'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /project/{projectid}/lead/{userid}:
+    get:
+      description: returns whether this particular user is a project lead or not
+      operationId: checkUserProjectLead
+      parameters:
+      - name: projectid
+        in: path
+        description: the project id for which the lead needs to be checked
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: userid
+        in: path
+        description: the user id for which the lead needs to be checked
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+    post:
+      description: creates the user a lead for the project
+      operationId: createProjectLead
+      parameters:
+      - name: projectid
+        in: path
+        description: the project id for which the lead needs to be checked
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: userid
+        in: path
+        description: the user id for which the lead needs to be checked
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /project/{projectid}/issues/{status}:
+    get:
+      description: returns the issues which are not assigned to any particular user
+        for a given status
+      operationId: getIssuesByStatus
+      parameters:
+      - name: projectid
+        in: path
+        description: the project id for which the lead needs to be checked
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: status
+        in: path
+        description: depending on the status is "assigned" or "unassigned", one can
+          list out the issues
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - assigned
+          - unassigned
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /project/{projectid}/status/{status}:
+    get:
+      description: returns the next possible status of a project depending on the
+        current status
+      operationId: getNextPossibleStatus
+      parameters:
+      - name: projectid
+        in: path
+        description: the project id for which the lead needs to be checked
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: status
+        in: path
+        description: depending on the status is "assigned" or "unassigned", one can
+          list out the issues
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                minItems: 1
+                type: array
+                items:
+                  type: string
+                x-content-type: application/json
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+components:
+  schemas:
+    SuccessResponse:
+      required:
+      - message
+      properties:
+        message:
+          type: string
+      example:
+        message: message
+    IssueHistoryResponse:
+      required:
+      - issue_id
+      - status
+      - updated_time
+      properties:
+        issue_id:
+          type: string
+        status:
+          type: string
+        updated_time:
+          type: string
+      example:
+        updated_time: updated_time
+        issue_id: issue_id
+        status: status
+    IssueResponse:
+      required:
+      - created_date
+      - description
+      - latest_status
+      - project_id
+      - reporter_id
+      - title
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        created_date:
+          type: string
+        reporter_id:
+          type: string
+        project_id:
+          type: string
+        latest_status:
+          type: string
+      example:
+        project_id: project_id
+        reporter_id: reporter_id
+        description: description
+        created_date: created_date
+        title: title
+        latest_status: latest_status
+    ErrorResponse:
+      required:
+      - message
+      properties:
+        message:
+          type: string
+    IssueDetail:
+      required:
+      - description
+      - status
+      - title
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+    UserDetail:
+      required:
+      - userid
+      properties:
+        userid:
+          type: string
+      example:
+        userid: userid
+    ProjectDetail:
+      required:
+      - created_date
+      - description
+      - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        created_date:
+          type: string
+      example:
+        name: name
+        description: description
+        created_date: created_date
+    ProjectInputDetail:
+      required:
+      - description
+      - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    FullProjectDetail:
+      required:
+      - created_date
+      - description
+      - name
+      - status_edges
+      - status_list
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        created_date:
+          type: string
+        status_list:
+          minItems: 1
+          type: array
+          items:
+            type: string
+        status_edges:
+          minItems: 1
+          type: array
+          items:
+            maxItems: 2
+            minItems: 2
+            type: array
+            items:
+              type: string
