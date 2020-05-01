@@ -22,7 +22,8 @@ class Connection {
   }
   static async query(inputStr, params, callback_fn){
     await this.initializeConnection();
-    // mysql injection prevention
+    // sql injection prevention
+    params = params.map((x) => this.connection.escape(x));
     return this.connection.query(inputStr, params, callback_fn);
   }
 }
