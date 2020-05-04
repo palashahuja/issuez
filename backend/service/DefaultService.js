@@ -74,6 +74,27 @@ exports.checkUserProjectLead = function(projectid,userid) {
   });
 }
 
+/**
+ * returns all projects for which this user is a project lead
+ *
+ * userid String the user id for which the leads need to be checked
+ * returns SuccessResponse
+ **/
+exports.getUserProjectLeads = function(userid) {
+  return new Promise((resolve, reject) => {
+    let query_str = 'SELECT * FROM `leads` WHERE user_id = ?';
+    let params = [userid];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve(results);
+      }
+    })
+  });
+}
+
 
 /**
  * Creates a new issue
@@ -83,15 +104,16 @@ exports.checkUserProjectLead = function(projectid,userid) {
  **/
 exports.createIssue = function(body) {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "message" : "message"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+    let query_str = 'INSERT INTO `issues`(`title`,`description`,`created_date`, `reporter_id`, `project_id`) VALUES (?, ?, now(), ?, ?)';
+    let params = [body.title, body.description, body.reporter_id, body.project_id];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve();
+      }
+    })
   });
 }
 
@@ -104,15 +126,16 @@ exports.createIssue = function(body) {
  **/
 exports.createNewProject = function(body) {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "message" : "message"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+    let query_str = 'INSERT INTO `project`(`name`,`description`,`created_date`) VALUES (?, ?, now())';
+    let params = [body.name, body.description];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve();
+      }
+    })
   });
 }
 
@@ -222,7 +245,7 @@ exports.getIssueHistoryDetails = function(issueid) {
  **/
 exports.getIssuesByStatus = function(projectid,status) {
   return new Promise((resolve, reject) => {
-    let query_str = 'SELECT issue_id FROM `issues` WHERE project_id = ? AND CASE WHEN ? = \"assigned\" THEN issue_id IN (SELECT issue_id from assigned) ELSE issue_id NOT IN (SELECT issue_id from assigned) END';
+    let query_str = 'SELECT issue_id FROM `issues` WHERE project_id = ? AND CASE WHEN ? = \"assigned\" THEN issue_id NOT IN (SELECT issue_id from assigned) ELSE issue_id IN (SELECT issue_id from assigned) END';
     let params = [projectid, status];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
@@ -289,7 +312,7 @@ exports.getProjectDetails = function(projectid) {
  **/
 exports.getUserAssignedIssue = function(issueid) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'select user_id from `assigned` where `issue_id` = ?';
+    let query_str = 'SELECT user_id FROM `assigned` WHERE `issue_id` = ?';
     let params = [issueid];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error) {
@@ -312,15 +335,16 @@ exports.getUserAssignedIssue = function(issueid) {
  **/
 exports.updateIssueDetails = function(body,issueid) {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "message" : "message"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+    let query_str = 'UPDATE `issues` SET `title` = ?,`description` = ? WHERE issue_id = ?';
+    let params = [body.title, body.description, issueid];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve();
+      }
+    })
   });
 }
 
@@ -334,14 +358,15 @@ exports.updateIssueDetails = function(body,issueid) {
  **/
 exports.updateProjectDetails = function(body,projectid) {
   return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "message" : "message"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
+    let query_str = 'UPDATE `project` SET `name` = ?,`description` = ? WHERE project_id = ?';
+    let params = [body.name, body.description, projectid];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve();
+      }
+    })
   });
 }

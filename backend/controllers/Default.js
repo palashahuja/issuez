@@ -142,3 +142,13 @@ module.exports.updateProjectDetails = function updateProjectDetails (req, res, n
       utils.writeJson(res, response);
     });
 };
+
+module.exports.getUserProjectLeads = function getUserProjectLeads (req, res, next, userid) {
+  Default.getUserProjectLeads(userid)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};

@@ -291,6 +291,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       x-swagger-router-controller: Default
+  /project/user/{userid}:
+    get:
+      description: returns the projects for which this particular user is a project lead
+      operationId: getUserProjectLeads
+      parameters:
+      - name: userid
+        in: path
+        description: the user id for which the project leads need to be checked
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeadsDetail'
+                x-content-type: application/json
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
   /project/{projectid}/lead/{userid}:
     get:
       description: returns whether this particular user is a project lead or not
@@ -392,7 +422,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueHistoryResponse'
+                x-content-type: application/json
         default:
           description: Error
           content:
@@ -521,6 +554,22 @@ components:
           type: string
       example:
         userid: userid
+    LeadsDetail:
+      required:
+      - user_id
+      - project_id
+      - assigned_date
+      properties:
+        user_id:
+          type: string
+        project_id:
+          type: string
+        assigned_date:
+          type: string
+      example:
+        user_id: user_id
+        project_id: project_id
+        assigned_date: assigned_date
     ProjectDetail:
       required:
       - created_date
