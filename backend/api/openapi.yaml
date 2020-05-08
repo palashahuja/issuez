@@ -3,7 +3,7 @@ info:
   title: Issuez Backend App
   version: 0.0.1
 servers:
-- url: http://localhost:8080/
+- url: http://localhost:8081/
 paths:
   /issues:
     post:
@@ -209,6 +209,23 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
       x-swagger-router-controller: Default
   /project:
+    get:
+      description: gets all the projects
+      operationId: getAllProjects
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ProjectDetail'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
     post:
       description: creates a new project
       operationId: createNewProject
@@ -467,6 +484,24 @@ paths:
                 items:
                   type: string
                 x-content-type: application/json
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
+  /users:
+    get:
+      description: gets all the users
+      operationId: getAllUsers
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserDetail'
         default:
           description: Error
           content:

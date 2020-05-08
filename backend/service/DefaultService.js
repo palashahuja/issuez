@@ -23,7 +23,7 @@ class Connection {
   static async query(inputStr, params, callback_fn){
     await this.initializeConnection();
     // sql injection prevention
-    params = params.map((x) => this.connection.escape(x));
+    //params = params.map((x) => this.connection.escape(x));
     return this.connection.query(inputStr, params, callback_fn);
   }
 }
@@ -112,7 +112,17 @@ exports.createIssue = function(body) {
         reject({'message': error})
       }
       else {
-        resolve();
+        query_str = 'INSERT INTO `issue_history`(`issue_id`,`updated_time`,`status`, `project_id`) VALUES (?, now(), \"NULL\", ?)';
+        params = [results.insertId, body.project_id];
+        Connection.query(query_str, params, (error, results, fields) => {
+          if(error){
+            reject({'message': error})
+          }
+          else {
+            resolve();
+          }
+        })
+        //resolve();
       }
     })
   });
@@ -202,7 +212,7 @@ exports.getIssueAssignedUser = function(userid) {
  **/
 exports.getIssueDetails = function(issueid) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'SELECT * FROM `issues` WHERE `issue_id` = ?';
+    let query_str = 'SELECT * FROM `issues` NATURAL JOIN `issue_history` WHERE `issue_id` = ? ORDER BY `updated_time` DESC LIMIT 1';
     let params = [issueid];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error) {
@@ -291,7 +301,7 @@ exports.getNextPossibleStatus = function(projectid,status) {
  **/
 exports.getProjectDetails = function(projectid) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'SELECT name, description, created_date FROM `project` WHERE project_id = ?'
+    let query_str = 'SELECT name, description, created_date FROM `project` WHERE project_id = ?';
     let params = [projectid]
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
@@ -304,6 +314,43 @@ exports.getProjectDetails = function(projectid) {
   });
 }
 
+/**
+ * gets all the projects
+ *
+ * returns List
+ **/
+exports.getAllProjects = function() {
+  return new Promise(function(resolve, reject) {
+    let query_str = 'SELECT * FROM `project`';
+    Connection.query(query_str, (error, results, fields) => {
+      if(error){
+        reject({'message': error});
+      }
+      else {
+        resolve(results);
+      }
+    })
+  });
+}
+
+/**
+ * gets all the users
+ *
+ * returns List
+ **/
+exports.getAllUsers = function() {
+  return new Promise(function(resolve, reject) {
+    let query_str = 'SELECT user_id, username FROM `users`';
+    Connection.query(query_str, (error, results, fields) => {
+      if(error){
+        reject({'message': error});
+      }
+      else {
+        resolve(results);
+      }
+    })
+  });
+}
 
 /**
  * Get all the assigned users for a particular issue
