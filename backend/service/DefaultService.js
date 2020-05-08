@@ -1,6 +1,7 @@
 'use strict';
 
 var mysql = require('mysql');
+var bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 
@@ -122,7 +123,6 @@ exports.createIssue = function(body) {
             resolve();
           }
         })
-        //resolve();
       }
     })
   });
@@ -144,6 +144,26 @@ exports.createNewProject = function(body) {
         reject({'message': error})
       }
       else {
+        let projID = results.insertId;
+        let trans = body.status_edges;
+        for (let i = 0; i < body.status_list.length; i++) {
+          query_str = 'INSERT INTO `status_list`(`project_id`,`status_name`) VALUES (?, ?)';
+          params = [projID, body.status_list[i]];
+          Connection.query(query_str, params, (error, results, fields) => {
+            if(error){
+              reject({'message': error})
+            }
+          })
+        }
+        for (let i = 0; i < trans.length; i++) {
+          query_str = 'INSERT INTO `transition`(`project_id`,`status_from`,`status_to`) VALUES (?, ?, ?)';
+          params = [projID, trans[i][0], trans[i][1]];
+          Connection.query(query_str, params, (error, results, fields) => {
+            if(error){
+              reject({'message': error})
+            }
+          })
+        }
         resolve();
       }
     })
@@ -347,6 +367,29 @@ exports.getAllUsers = function() {
       }
       else {
         resolve(results);
+      }
+    })
+  });
+}
+
+/**
+ * creates a new user
+ *
+ * body FullUserDetail the required details about creating a new user
+ * returns SuccessResponse
+ **/
+exports.createNewUser = function(body) {
+  return new Promise(function(resolve, reject) {
+    let salt = bcrypt.genSaltSync(10);
+    let hash = bcrypt.hashSync(body.password, salt);
+    let query_str = 'INSERT INTO `users`(`email_address`,`username`,`displayname`,`password`) VALUES (?, ?, ?, ?)';
+    let params = [body.email_address, body.username, body.displayname, hash];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve();
       }
     })
   });

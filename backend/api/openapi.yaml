@@ -509,6 +509,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       x-swagger-router-controller: Default
+    post:
+      description: creates a new user
+      operationId: createNewUser
+      requestBody:
+        description: the required details about creating a new user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FullUserDetail'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
 components:
   schemas:
     SuccessResponse:
@@ -589,6 +613,26 @@ components:
           type: string
       example:
         userid: userid
+    FullUserDetail:
+      required:
+      - email_address
+      - username
+      - displayname
+      - password
+      properties:
+        email_address:
+          type: string
+        username:
+          type: string
+        displayname:
+          type: string
+        password:
+          type: string
+      example:
+        email_address: email_address
+        username: username
+        displayname: displayname
+        password: password
     LeadsDetail:
       required:
       - user_id
