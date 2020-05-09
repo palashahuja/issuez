@@ -372,10 +372,11 @@ exports.getAllUsers = function() {
  **/
 exports.createNewUser = function(body) {
   return new Promise(function(resolve, reject) {
-    let salt = bcrypt.genSaltSync(10);
-    let hash = bcrypt.hashSync(body.password, salt);
+    // let salt = bcrypt.genSaltSync(10);
+    // let hash = bcrypt.hashSync(body.password, salt);
+    // no need to encrypt here. I am encrypting from the frontend side.
     let query_str = 'INSERT INTO `users`(`email_address`,`username`,`displayname`,`password`) VALUES (?, ?, ?, ?)';
-    let params = [body.email_address, body.username, body.displayname, hash];
+    let params = [body.email_address, body.username, body.displayname, body.password];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
         reject({'message': error})
