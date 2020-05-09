@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { Alert, Navbar, NavbarBrand } from 'reactstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'
 // import logo from './logo.svg';
 import './App.css';
 import AlertContextProvider from './components/AlertContext';
@@ -10,6 +11,8 @@ import IssuePage from './components/IssuePage';
 import MainPage from './components/MainPage';
 import ProjectPage from './components/ProjectPage';
 import UserContext from './components/UserContext';
+import SignupPage from './components/SignupPage';
+import LoginPage from './components/SigninPage';
 
 function HeaderLayout(props) {
   return (<div>
@@ -57,7 +60,13 @@ function App() {
           <Switch>
             <UserContext.Provider value={{ userid: 1 }}>
               <Route path="/dashboard">
-                <MainPage userid="1" />
+                <MainPage />
+              </Route>
+              <Route path="/signup">
+                <SignupPage />
+              </Route>
+              <Route path="/login">
+                <LoginPage />
               </Route>
               <Route exact path="/project/:projectid">
                 <ProjectPage />
@@ -71,7 +80,7 @@ function App() {
               <Route exact path="/project/:projectid/issue/create">
                 <CreateIssuePage />
               </Route>
-              {/* <Redirect from="/" exact to="/dashboard" /> */}
+              {/* <Redirect from="/" exact to="/login" /> */}
             </UserContext.Provider>
           </Switch>
         </AlertMessage>

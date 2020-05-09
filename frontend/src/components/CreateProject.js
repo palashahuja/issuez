@@ -4,6 +4,7 @@ import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Form
 import '../App.css';
 import '../InputTag.css';
 import AlertContextProvider from './AlertContext';
+import { isNullOrUndefined } from './UtilityFunc';
 
 const InputTag = (props) => {
     let tags = props.inputVal;
@@ -49,9 +50,6 @@ const InputTag = (props) => {
 // and EdgesRow
 
 
-const isNullOrUndefined = (str) => {
-    return (!str || /^\s*$/.test(str));
-};
 
 const EdgeRow = (props) => {
     // two dropdown opens for each state
