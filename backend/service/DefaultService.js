@@ -23,7 +23,7 @@ class Connection {
   static async query(inputStr, params, callback_fn){
     await this.initializeConnection();
     // sql injection prevention
-    params = params.map((x) => this.connection.escape(x));
+    // params = params.map((x) => this.connection.escape(x));
     return this.connection.query(inputStr, params, callback_fn);
   }
 }
@@ -104,6 +104,7 @@ exports.getUserProjectLeads = function(userid) {
  * returns SuccessResponse
  **/
 exports.createIssue = function(body) {
+  // console.log(body);
   return new Promise(function(resolve, reject) {
     let query_str = 'INSERT INTO `issues`(`title`,`description`,`created_date`, `reporter_id`, `project_id`) VALUES (?, ?, now(), ?, ?)';
     let params = [body.title, body.description, body.reporter_id, body.project_id];
@@ -112,7 +113,8 @@ exports.createIssue = function(body) {
         reject({'message': error})
       }
       else {
-        resolve();
+        // console.log(resultsinsertId);
+        resolve({'message': 'inserted successfully'});
       }
     })
   });
@@ -186,7 +188,6 @@ exports.getIssueAssignedUser = function(userid) {
           reject({'message': error});
         }
         else {
-          console.log(results);
           resolve(results);
         }
       })
@@ -246,7 +247,7 @@ exports.getIssueHistoryDetails = function(issueid) {
  **/
 exports.getIssuesByStatus = function(projectid,status) {
   return new Promise((resolve, reject) => {
-    let query_str = 'SELECT issue_id FROM `issues` WHERE project_id = ? AND CASE WHEN ? = \"assigned\" THEN issue_id NOT IN (SELECT issue_id from assigned) ELSE issue_id IN (SELECT issue_id from assigned) END';
+    let query_str = 'SELECT issue_id FROM `issues` WHERE project_id = ? AND CASE WHEN ? = \"unassigned\" THEN issue_id NOT IN (SELECT issue_id from assigned) ELSE issue_id IN (SELECT issue_id from assigned) END';
     let params = [projectid, status];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){

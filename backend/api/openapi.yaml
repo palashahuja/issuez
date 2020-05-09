@@ -3,7 +3,7 @@ info:
   title: Issuez Backend App
   version: 0.0.1
 servers:
-- url: http://localhost:8080/
+- url: http://localhost:8081/
 paths:
   /issues:
     post:
@@ -504,7 +504,6 @@ components:
       required:
       - created_date
       - description
-      - latest_status
       - project_id
       - reporter_id
       - title
