@@ -152,3 +152,33 @@ module.exports.getUserProjectLeads = function getUserProjectLeads (req, res, nex
       utils.writeJson(res, response);
     });
 };
+
+module.exports.getAllProjects = function getAllProjects (req, res, next) {
+  Default.getAllProjects()
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
+
+module.exports.getAllUsers = function getAllUsers (req, res, next) {
+  Default.getAllUsers()
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
+
+module.exports.createNewUser = function createNewUser (req, res, next, body) {
+  Default.createNewUser(body)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};

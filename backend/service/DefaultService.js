@@ -1,6 +1,7 @@
 'use strict';
 
 var mysql = require('mysql');
+var bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 
@@ -23,7 +24,7 @@ class Connection {
   static async query(inputStr, params, callback_fn){
     await this.initializeConnection();
     // sql injection prevention
-    // params = params.map((x) => this.connection.escape(x));
+    //params = params.map((x) => this.connection.escape(x));
     return this.connection.query(inputStr, params, callback_fn);
   }
 }
@@ -136,6 +137,26 @@ exports.createNewProject = function(body) {
         reject({'message': error})
       }
       else {
+        let projID = results.insertId;
+        let trans = body.status_edges;
+        for (let i = 0; i < body.status_list.length; i++) {
+          query_str = 'INSERT INTO `status_list`(`project_id`,`status_name`) VALUES (?, ?)';
+          params = [projID, body.status_list[i]];
+          Connection.query(query_str, params, (error, results, fields) => {
+            if(error){
+              reject({'message': error})
+            }
+          })
+        }
+        for (let i = 0; i < trans.length; i++) {
+          query_str = 'INSERT INTO `transition`(`project_id`,`status_from`,`status_to`) VALUES (?, ?, ?)';
+          params = [projID, trans[i][0], trans[i][1]];
+          Connection.query(query_str, params, (error, results, fields) => {
+            if(error){
+              reject({'message': error})
+            }
+          })
+        }
         resolve();
       }
     })
@@ -203,7 +224,7 @@ exports.getIssueAssignedUser = function(userid) {
  **/
 exports.getIssueDetails = function(issueid) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'SELECT * FROM `issues` WHERE `issue_id` = ?';
+    let query_str = 'SELECT * FROM `issues` NATURAL JOIN `issue_history` WHERE `issue_id` = ? ORDER BY `updated_time` DESC LIMIT 1';
     let params = [issueid];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error) {
@@ -292,7 +313,7 @@ exports.getNextPossibleStatus = function(projectid,status) {
  **/
 exports.getProjectDetails = function(projectid) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'SELECT name, description, created_date FROM `project` WHERE project_id = ?'
+    let query_str = 'SELECT name, description, created_date FROM `project` WHERE project_id = ?';
     let params = [projectid]
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
@@ -305,6 +326,66 @@ exports.getProjectDetails = function(projectid) {
   });
 }
 
+/**
+ * gets all the projects
+ *
+ * returns List
+ **/
+exports.getAllProjects = function() {
+  return new Promise(function(resolve, reject) {
+    let query_str = 'SELECT * FROM `project`';
+    Connection.query(query_str, (error, results, fields) => {
+      if(error){
+        reject({'message': error});
+      }
+      else {
+        resolve(results);
+      }
+    })
+  });
+}
+
+/**
+ * gets all the users
+ *
+ * returns List
+ **/
+exports.getAllUsers = function() {
+  return new Promise(function(resolve, reject) {
+    let query_str = 'SELECT user_id, username FROM `users`';
+    Connection.query(query_str, (error, results, fields) => {
+      if(error){
+        reject({'message': error});
+      }
+      else {
+        resolve(results);
+      }
+    })
+  });
+}
+
+/**
+ * creates a new user
+ *
+ * body FullUserDetail the required details about creating a new user
+ * returns SuccessResponse
+ **/
+exports.createNewUser = function(body) {
+  return new Promise(function(resolve, reject) {
+    let salt = bcrypt.genSaltSync(10);
+    let hash = bcrypt.hashSync(body.password, salt);
+    let query_str = 'INSERT INTO `users`(`email_address`,`username`,`displayname`,`password`) VALUES (?, ?, ?, ?)';
+    let params = [body.email_address, body.username, body.displayname, hash];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve();
+      }
+    })
+  });
+}
 
 /**
  * Get all the assigned users for a particular issue

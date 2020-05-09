@@ -3,6 +3,7 @@
 var path = require('path');
 var http = require('http');
 var cors = require('cors');
+var bcrypt = require('bcryptjs');
 
 var oas3Tools = require('oas3-tools');
 var serverPort = 8081;
@@ -21,4 +22,3 @@ http.createServer(app).listen(serverPort, function () {
     console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
     console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
 });
-
