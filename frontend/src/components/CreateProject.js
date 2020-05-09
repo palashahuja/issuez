@@ -22,11 +22,9 @@ const InputTag = (props) => {
             if (tags.find(tag => tag.toLowerCase() === val.toLowerCase())) {
                 return;
             }
-            // this.setState({ tags: [...this.state.tags, val] });
             setTags([...tags, val]);
             setTagValue('');
         } else if (e.key === 'Backspace' && !val) {
-            // this.removeTag(this.state.tags.length - 1);
             removeTag(tags.length - 1);
         } else if (val) {
             setTagValue(val);
@@ -102,11 +100,8 @@ const CreateProjectPage = (props) => {
     const [showEdges, setShowEdges] = useState(false);
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-    // const edges = []; // create a list of edges
     const [title, setTitle] = useState(' ');
     const [description, setDescription] = useState(' ');
-    // const [showDialog, setShowDialog] = useState(false);
-    // const [message, setMessage] = useState('');
     const showMessage = useContext(AlertContextProvider).showMessage;
 
     const deleteHandler = (id) => {
@@ -124,13 +119,11 @@ const CreateProjectPage = (props) => {
         }
     }
 
-
     if (showEdges) {
         if (edges.length === 0) {
             setEdges([['NULL', nodes[0]]]);
         }
     }
-
 
     return (<div>
         <h1 className="HeaderFontFamily" style={{ marginTop: 10 }}>Create Project</h1>
