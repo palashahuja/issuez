@@ -588,7 +588,6 @@ components:
       required:
       - created_date
       - description
-      - latest_status
       - project_id
       - reporter_id
       - title
