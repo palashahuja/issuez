@@ -533,6 +533,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       x-swagger-router-controller: Default
+  /users/verify:
+    post:
+      description: verifies a new user
+      operationId: verifyUser
+      requestBody:
+        description: the required details to verify a new user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartUserDetail'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
 components:
   schemas:
     SuccessResponse:
@@ -632,6 +657,18 @@ components:
         email_address: email_address
         username: username
         displayname: displayname
+        password: password
+    PartUserDetail:
+      required:
+      - email_address
+      - password
+      properties:
+        email_address:
+          type: string
+        password:
+          type: string
+      example:
+        email_address: email_address
         password: password
     LeadsDetail:
       required:

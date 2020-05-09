@@ -182,3 +182,13 @@ module.exports.createNewUser = function createNewUser (req, res, next, body) {
       utils.writeJson(res, response);
     });
 };
+
+module.exports.verifyUser = function verifyUser (req, res, next, body) {
+  Default.verifyUser(body)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
