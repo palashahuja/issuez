@@ -533,6 +533,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       x-swagger-router-controller: Default
+  /users/{userid}:
+    get:
+      description: gets all public info on the user with the specified id
+      operationId: getUserDetails
+      parameters:
+      - name: userid
+        in: path
+        description: the id for which the details needs to be given
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/PublicUserDetail'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
   /users/verify:
     post:
       description: verifies a new user
@@ -669,6 +696,22 @@ components:
       example:
         email_address: email_address
         password: password
+    PublicUserDetail:
+      required:
+      - email_address
+      - username
+      - displayname
+      properties:
+        email_address:
+          type: string
+        username:
+          type: string
+        displayname:
+          type: string
+      example:
+        email_address: email_address
+        username: username
+        displayname: displayname
     LeadsDetail:
       required:
       - user_id

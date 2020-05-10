@@ -47,7 +47,7 @@ exports.assignUserToIssue = function(issueid,userid) {
         reject({'message': error})
       }
       else {
-        resolve();
+        resolve({'message': 'inserted successfully'});
       }
     })
   });
@@ -197,7 +197,7 @@ exports.createProjectLead = function(projectid,userid) {
         reject({'message': error})
       }
       else {
-        resolve();
+        resolve({'message': 'inserted successfully'});
       }
     })
   });
@@ -382,6 +382,26 @@ exports.getAllUsers = function() {
 }
 
 /**
+ * gets public info associated with a particular userid
+ *
+ * returns List
+ **/
+exports.getUserDetails = function(userid) {
+  return new Promise(function(resolve, reject) {
+    let query_str = 'SELECT email_address, username, displayname FROM `users` WHERE user_id = ?';
+    let params = [userid];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error});
+      }
+      else {
+        resolve(results);
+      }
+    })
+  });
+}
+
+/**
  * creates a new user
  *
  * body FullUserDetail the required details about creating a new user
@@ -499,7 +519,7 @@ exports.updateProjectDetails = function(body,projectid) {
         reject({'message': error})
       }
       else {
-        resolve();
+        resolve({'message': 'inserted successfully'});
       }
     })
   });

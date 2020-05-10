@@ -192,3 +192,13 @@ module.exports.verifyUser = function verifyUser (req, res, next, body) {
       utils.writeJson(res, response);
     });
 };
+
+module.exports.getUserDetails = function getUserDetails (req, res, next, userid) {
+  Default.getUserDetails(userid)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
