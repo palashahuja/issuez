@@ -30,8 +30,10 @@ function HeaderLayout(props) {
 const AlertMessage = ({ children }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [message, setMessage] = useState('');
-  const showMessage = (message) => {
+  const [color, setColor] = useState('warning');
+  const showMessage = (message, color='warning') => {
     setShowDialog(true); setMessage(message);
+    setColor(color);
   }
   // close the dialog after 2s .
   if(showDialog === true){
@@ -39,7 +41,7 @@ const AlertMessage = ({ children }) => {
   }
   return (<>
     <AlertContextProvider.Provider value={{ showMessage }}>
-      {showDialog && <Alert color='warning' toggle={() => setShowDialog(false)}>
+      {showDialog && <Alert color={color} toggle={() => setShowDialog(false)}>
         {message}
       </Alert>}
       {children}
@@ -77,10 +79,13 @@ function App() {
               <Route path="/issue/:issueid">
                 <IssuePage />
               </Route>
-              <Route exact path="/project/:projectid/issue/create">
+              <Route exact path="/project/:projectid/issue/:issueid">
                 <CreateIssuePage />
               </Route>
-              {/* <Redirect from="/" exact to="/login" /> */}
+              <Route exact path="/project/:projectid/issue">
+                <CreateIssuePage />
+              </Route>
+              <Redirect from="/" exact to="/dashboard" />
             </UserContext.Provider>
           </Switch>
         </AlertMessage>

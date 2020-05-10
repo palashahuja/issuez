@@ -20,12 +20,16 @@ const useStyles = makeStyles((theme) => ({
 
 const fetchIssues = (issue_set, callback_fn) => {
     let issue_info = []
+    let correct_len = issue_set.length;
     issue_set.forEach(element => {
         fetch(constants.LOCALHOST_URL + 'issues/' + element.issue_id)
             .then(res => res.json())
             .then(result => {
-                issue_info.push(result[0]);
-                if (issue_info.length === issue_set.length) {
+                if(result.length === 0) correct_len--;
+                else {
+                    issue_info.push(result[0]);
+                }
+                if (issue_info.length === correct_len) {
                     callback_fn(issue_info);
                 }
             })
@@ -84,6 +88,8 @@ const ProjectPage = (props) => {
                 })
     }, [projectURL, isLead]);
 
+    // should be able to assign leads
+
     let left_component = isLead ? <Grid className="w-90">
         <Paper className={classes.control}>
             <h1 className="HeaderFontFamily">Unassigned Issues</h1>
@@ -118,7 +124,7 @@ const ProjectPage = (props) => {
         </Row>
         <Row style={{marginTop: 10}}>
             <Col>
-                <Button className='align-self-center' color='primary' onClick={() => {history.push('/project/' + projectid + '/issue/create')}}>Create Issue</Button>
+                <Button className='align-self-center' color='primary' onClick={() => {history.push('/project/' + projectid + '/issue/')}}>Create Issue</Button>
             </Col>
         </Row>
     </div>)

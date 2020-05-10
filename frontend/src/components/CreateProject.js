@@ -5,6 +5,9 @@ import '../App.css';
 import '../InputTag.css';
 import AlertContextProvider from './AlertContext';
 import { isNullOrUndefined } from './UtilityFunc';
+import constants from '../constants';
+import UserContext from './UserContext';
+import { useHistory } from 'react-router';
 
 const InputTag = (props) => {
     let tags = props.inputVal;
@@ -101,6 +104,8 @@ const CreateProjectPage = (props) => {
     const [title, setTitle] = useState(' ');
     const [description, setDescription] = useState(' ');
     const showMessage = useContext(AlertContextProvider).showMessage;
+    const userid = useContext(UserContext).userid;
+    const history = useHistory();
 
     const deleteHandler = (id) => {
         let newEdges = [...edges];
@@ -220,22 +225,46 @@ const CreateProjectPage = (props) => {
                         for(i = 0; i < edges.length; i++){
                             adjList[edges[i][0]].push(edges[i][1]);
                         }
-                        console.log(adjList);
-                        var stack = [];
-                        var visited = [];
-                        stack.push(startNode); visited.push(startNode);
+                        let stack = [];
+                        let visited = [];
+                        stack.push(startNode); 
+                        visited.push(startNode);
                         while(stack.length > 0){
                             let top = stack.pop();
                             for(i = 0; i < adjList[top].length; i++){
-                                if(adjList[top][i] in visited) continue;
-                                visited.push(adjList[top][i]);
-                                stack.push(adjList[top][i]);
+                                let node = adjList[top][i];
+                                if(visited.includes(node)) continue;
+                                visited.push(node);
+                                stack.push(node);
                             }
                         }
                         if(visited.length !== nodes.length){
                             showMessage('Some nodes are not covered by the given edges. Please check!');
                             return;
                         }
+                        // need to add the code for creating new project 
+                        // need to construct the body for sending the post request 
+                        let project_body = {
+                            'created_date': '',
+                            'description': description,
+                            'name': title,
+                            'status_list': nodes,
+                            'status_edges': edges,
+                            'project_lead': userid
+                        }
+                        // user who created the project also needs to be marked as lead for the project 
+                        const postRequestOptions = {
+                            method: 'POST', 
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(project_body)
+                        }
+                        // POST body to send the request for creating the project 
+                        fetch(constants.LOCALHOST_URL + 'project/', postRequestOptions)
+                        .then(res => res.json())
+                        .then((_) => {
+                            showMessage('Project Created Successfully! ', 'info');
+                        })
+                        history.push('/dashboard');
                     }}>Submit</Button>
                 </Col>
             </FormGroup>

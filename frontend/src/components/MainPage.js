@@ -21,16 +21,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const convertIssuesToProjectList = (issues, callback_fn) => {
+const convertIssuesToProjectList = (issues, callback_fn, project_ids) => {
     if(!issues || issues === null) return;
     // get all the project ids and then fetch them all 
     if(issues.length === 0) return;
-    console.log(issues);
     let uniqueid_list = new Set();
     issues.forEach(element => {
         uniqueid_list.add(element.project_id);
         
     });
+    project_ids.forEach(element => {
+        uniqueid_list.add(element.project_id);
+    })
     var all_project_info = []
     uniqueid_list.forEach((project_id) => {
         fetch(constants.LOCALHOST_URL + 'project/' + project_id)
@@ -55,7 +57,7 @@ const CustomProjectListComponent = (props) => {
     // handle the clicking event here 
     const handleClick = () => {history.push("/project/" + props.item.project_id)};
     return (
-        <ListGroupItem active={isActive} onMouseEnter={activeChange} onMouseLeave={activeChange} onClick={handleClick}>
+        <ListGroupItem active={isActive} onMouseEnter={activeChange} onMouseLeave={activeChange} onClick={() => {handleClick()}}>
             <ListGroupItemHeading className="LineFontFamily">{props.item.name}</ListGroupItemHeading>
             <ListGroupItemText className="LineFontFamily">{props.item.description}</ListGroupItemText>
         </ListGroupItem>
@@ -67,6 +69,7 @@ const CustomProjectListComponent = (props) => {
 // custom component for the main page 
 export default function MainPage(props) {
     const [project_list, setProjectList] = useState([]);
+    const [all_project_list, setAllProjectList] = useState([]);
     const userid = useContext(UserContext).userid;
     // history object 
     const history = useHistory();
@@ -78,8 +81,23 @@ export default function MainPage(props) {
             .then(res => res.json())
             .then(result => {
                     if('message' in result) return;
-                    convertIssuesToProjectList(result, setProjectList);
+                    fetch(constants.LOCALHOST_URL + 'project/user/' + userid)
+                    .then(res => res.json())
+                    .then(project_leads => {
+                        if('message' in project_leads) return;
+                        convertIssuesToProjectList(result, setProjectList, project_leads);
+                    })
             });
+    }, [userid]);
+
+    // fetch the data for all projects 
+    useEffect(() => {
+        fetch(constants.LOCALHOST_URL + 'project')
+        .then(res => res.json())
+        .then(result => {
+            if('message' in result) return;
+            setAllProjectList(result);
+        })
     }, [userid]);
 
     // return the project list
@@ -95,6 +113,16 @@ export default function MainPage(props) {
                                 ))}
                             </ListGroup>
                         </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                    <Paper className={classes.control}>
+                        <h1 className="HeaderFontFamily">All Projects</h1>
+                        <ListGroup>
+                            {all_project_list.map((item, index) => (
+                                <CustomProjectListComponent key={index} item={item}/>
+                            ))}
+                        </ListGroup>
+                    </Paper>
                 </Grid>
                 <Grid item xs={12} onClick={() => history.push('/createproject')}>
                     <Button color="primary">Create Project</Button>

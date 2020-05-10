@@ -13,7 +13,7 @@ const CustomListComponent = (props) => {
     const handleClick = () => {history.push("/issue/" + props.item.issue_id)};
     return (
         <div>
-        <ListGroupItem active={isActive} onMouseEnter={activeChange} onMouseLeave={activeChange} onClick={handleClick}>
+        <ListGroupItem active={isActive} onMouseEnter={activeChange} onMouseLeave={activeChange} onClick={() => handleClick()}>
             <ListGroupItemHeading className="LineFontFamily">{props.item.title}</ListGroupItemHeading>
             <ListGroupItemText className="LineFontFamily">{props.item.description}</ListGroupItemText>
         </ListGroupItem>

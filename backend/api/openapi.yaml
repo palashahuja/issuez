@@ -717,6 +717,7 @@ components:
       - name
       - status_edges
       - status_list
+      - project_lead
       properties:
         name:
           type: string
@@ -738,3 +739,5 @@ components:
             type: array
             items:
               type: string
+        project_lead:
+          type: string

@@ -10,10 +10,12 @@ export const hashPassword = (currentPassword, callback) => {
     bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
         if (err) throw err;
         // hash the password 
+        /*eslint-disable*/
         bcrypt.hash(currentPassword, salt, (err, hash) => {
             if(err) throw err;
             // override the clear text password with the hash 
             // eslint-disable-next-line
+            /*eslint-disable*/
             callback(hash);
             // eslint-disable-next-line
         })

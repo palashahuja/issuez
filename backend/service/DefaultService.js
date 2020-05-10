@@ -1,6 +1,7 @@
 'use strict';
 
 var mysql = require('mysql');
+// var bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 
@@ -114,7 +115,17 @@ exports.createIssue = function(body) {
       }
       else {
         // console.log(resultsinsertId);
-        resolve({'message': 'inserted successfully'});
+        let issueID = results.insertId;
+        query_str = "INSERT INTO `issue_history`(`issue_id`, `updated_time`, `status`,`project_id`) VALUES(?, now(), ?, ?)";
+        params = [issueID,body.latest_status, body.project_id];
+        Connection.query(query_str, params, (error) => {
+          if(error){
+            reject({'message': error})
+          }
+          else {
+            resolve({'message': 'inserted successfully'});
+          }
+        })
       }
     })
   });
@@ -152,11 +163,18 @@ exports.createNewProject = function(body) {
           params = [projID, trans[i][0], trans[i][1]];
           Connection.query(query_str, params, (error, results, fields) => {
             if(error){
-              reject({'message': error})
+              reject({'message': error});
             }
           })
         }
-        resolve();
+        query_str = 'INSERT INTO `leads`(`project_id`, `user_id`, `assigned_date`) VALUES(?, ?, now())';
+        params = [projID, body.project_lead ]
+        Connection.query(query_str, params, (error, results, fields) => {
+          if(error){
+            reject({'message': error});
+          }
+        })
+        resolve({message: 'Inserted Successfully'});
       }
     })
   });
@@ -223,7 +241,7 @@ exports.getIssueAssignedUser = function(userid) {
  **/
 exports.getIssueDetails = function(issueid) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'SELECT * FROM `issues` NATURAL JOIN `issue_history` WHERE `issue_id` = ? ORDER BY `updated_time` DESC LIMIT 1';
+    let query_str = 'SELECT * FROM `issues` A NATURAL JOIN `issue_history` B WHERE A.issue_id = ? ORDER BY `updated_time` DESC LIMIT 1';
     let params = [issueid];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error) {
@@ -245,7 +263,7 @@ exports.getIssueDetails = function(issueid) {
  **/
 exports.getIssueHistoryDetails = function(issueid) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'SELECT updated_time, issue_id, status FROM `issue_history` WHERE `issue_id` = ?';
+    let query_str = 'SELECT updated_time, issue_id, status FROM `issue_history` WHERE `issue_id` = ? ORDER BY updated_time DESC';
     let params = [issueid];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error) {
@@ -372,6 +390,7 @@ exports.getAllUsers = function() {
 exports.createNewUser = function(body) {
   return new Promise(function(resolve, reject) {
     let query_str = 'INSERT INTO `users`(`email_address`,`username`,`displayname`,`password`) VALUES (?, ?, ?, ?)';
+
     let params = [body.email_address, body.username, body.displayname, body.password];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
@@ -443,7 +462,21 @@ exports.updateIssueDetails = function(body,issueid) {
         reject({'message': error})
       }
       else {
-        resolve();
+        // resolve({'message': 'updated successfully'});
+        // console.log(resultsinsertId);
+        let issueID = issueid;
+        query_str = "INSERT INTO `issue_history`(`issue_id`, `updated_time`, `status`,`project_id`) VALUES(?, now(), ?, ?)";
+        params = [issueID, body.status, body.project_id];
+        Connection.query(query_str, params, (error, results, fields) => {
+          if(error){
+            reject({'message': error})
+          }
+          else {
+            console.log(results);
+            resolve({'message': 'inserted successfully'});
+          }
+        })
+
       }
     })
   });

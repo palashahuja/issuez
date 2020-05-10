@@ -3,7 +3,7 @@
 var path = require('path');
 var http = require('http');
 var cors = require('cors');
-var bcrypt = require('bcryptjs');
+// var bcrypt = require('bcryptjs');
 
 var oas3Tools = require('oas3-tools');
 var serverPort = 8081;
