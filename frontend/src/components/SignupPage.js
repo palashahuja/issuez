@@ -1,7 +1,9 @@
 import React, { useRef, useContext } from "react";
 import AlertContext from './AlertContext';
 import { isNullOrUndefined, hashPassword, emailValidate } from './UtilityFunc'; 
-
+import UserContext from "./UserContext";
+import constants from '../constants';
+import { useHistory } from "react-router";
 
 
 const SignUp = (props) => {
@@ -9,6 +11,8 @@ const SignUp = (props) => {
     const userName = useRef('');
     const displayName = useRef('');
     const password = useRef('');
+    const history = useHistory();
+    const setUserId = useContext(UserContext).setUserId;
     const displayMessage = useContext(AlertContext).showMessage;
     const buttonClickEvent = async () =>  {
         // get all the current values 
@@ -42,8 +46,30 @@ const SignUp = (props) => {
             console.log(currentUserName);
             console.log(currentEmailAddress);
             console.log(currentDisplayName);
+            let post_body_req = {
+                'email_address': currentEmailAddress,
+                'username'     : currentUserName,
+                'displayname'  : currentDisplayName,
+                'password'     : encryptedVal
+            }
+            const postRequestOptions = {
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(post_body_req)
+            }
+            fetch(constants.LOCALHOST_URL + 'users', postRequestOptions)
+            .then(res => res.json())
+            .then(result => {
+                if('message' in result){
+                    displayMessage('User already exists');
+                }
+                else {
+                    setUserId(result.userid);
+                    displayMessage('User signed up successfully!', 'info')
+                    history.push('/login');
+                }
+            })
         })
-        // console.log(currentPassword);
     }
 
     return (

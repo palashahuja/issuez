@@ -35,7 +35,7 @@ const IssuePage = (props) => {
     const [issueDetails, setIssueDetails] = useState([]);
     const [isAssigned, setIsAssigned] = useState(false);
     const [issueHistory, setIssueHistory] = useState([]);
-    const [assigned, setAssigned] = useState([]);
+    // const [assigned, setAssigned] = useState([]);
     const userid = useContext(UserContext).userid;
     const [project_id, setProjectId] = useState('');
     const history = useHistory();
@@ -64,7 +64,7 @@ const IssuePage = (props) => {
         .then(res => res.json())
         .then(result => {
             // now for each issue id get the details of the user 
-            
+
         })
     }, [issueid])
 

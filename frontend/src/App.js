@@ -1,7 +1,7 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Alert, Navbar, NavbarBrand } from 'reactstrap';
-import 'bootstrap/dist/css/bootstrap.min.css'
 // import logo from './logo.svg';
 import './App.css';
 import AlertContextProvider from './components/AlertContext';
@@ -10,9 +10,9 @@ import CreateProjectPage from './components/CreateProject';
 import IssuePage from './components/IssuePage';
 import MainPage from './components/MainPage';
 import ProjectPage from './components/ProjectPage';
-import UserContext from './components/UserContext';
-import SignupPage from './components/SignupPage';
 import LoginPage from './components/SigninPage';
+import SignupPage from './components/SignupPage';
+import UserContext from './components/UserContext';
 
 function HeaderLayout(props) {
   return (<div>
@@ -27,6 +27,7 @@ function HeaderLayout(props) {
 
 
 
+// creating a global context for alert 
 const AlertMessage = ({ children }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [message, setMessage] = useState('');
@@ -50,24 +51,31 @@ const AlertMessage = ({ children }) => {
 }
 
 
-// creating a global context for alert 
+// create a global context for the currently authenticated user 
+const CurrentlyAuthenticatedUser = (props) => {
+  const [userId, setUserId] = useState(1);
+  return (<>
+    <UserContext.Provider value={{userid: userId, setUserId: setUserId}}>
+      {props.children}
+    </UserContext.Provider>
+  </>)
+}
 
 
-// creating a global context for the currently authenticated user 
 function App() {
   return (
     <Router>
       <HeaderLayout>
         <AlertMessage>
           <Switch>
-            <UserContext.Provider value={{ userid: 1 }}>
-              <Route path="/dashboard">
+            <CurrentlyAuthenticatedUser>
+              <Route exact path="/dashboard">
                 <MainPage />
               </Route>
-              <Route path="/signup">
+              <Route exact path="/signup">
                 <SignupPage />
               </Route>
-              <Route path="/login">
+              <Route exact path="/login">
                 <LoginPage />
               </Route>
               <Route exact path="/project/:projectid">
@@ -85,8 +93,8 @@ function App() {
               <Route exact path="/project/:projectid/issue">
                 <CreateIssuePage />
               </Route>
-              <Redirect from="/" exact to="/dashboard" />
-            </UserContext.Provider>
+              {/* <Redirect from="/" exact to="/login" /> */}
+            </CurrentlyAuthenticatedUser>
           </Switch>
         </AlertMessage>
       </HeaderLayout>

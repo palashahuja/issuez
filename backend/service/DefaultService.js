@@ -397,7 +397,7 @@ exports.createNewUser = function(body) {
         reject({'message': error})
       }
       else {
-        resolve();
+        resolve({userid: results.insertId});
       }
     })
   });
@@ -415,10 +415,10 @@ exports.verifyUser = function(body) {
     let params = [body.email_address, body.password];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
-        reject({'message': error})
+        reject({'error': error})
       }
       else {
-        resolve({'message': results.length > 0});
+        resolve({'message': results});
       }
     })
   });
