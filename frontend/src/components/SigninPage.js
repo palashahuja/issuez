@@ -42,11 +42,11 @@ const Login = () => {
             fetch(constants.LOCALHOST_URL + 'users/verify', postRequestOptions)
                 .then(res => res.json())
                 .then(result => {
-                    if (('error' in result) || result.length <= 0 ){
+                    if (('error' in result) || result.message.length <= 0 ){
                         displayMessage('Incorrect username or password');
                     }
                     else {
-                        setUserId(result.user_id);
+                        setUserId(result.message[0].user_id);
                         displayMessage('User signed in successfully!', 'info');
                         history.push('/dashboard');
                     }

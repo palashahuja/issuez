@@ -128,3 +128,7 @@ body, html, .App, #root, .auth-wrapper {
 .forgot-password a {
   color: #167bff;
 }
+
+.breadcrumb    {
+    background-color: white;
+}

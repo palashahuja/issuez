@@ -1,7 +1,7 @@
 'use strict';
 
 var mysql = require('mysql');
-// var bcrypt = require('bcryptjs');
+var bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 
@@ -431,14 +431,21 @@ exports.createNewUser = function(body) {
  **/
 exports.verifyUser = function(body) {
   return new Promise(function(resolve, reject) {
-    let query_str = 'SELECT * FROM `users` WHERE email_address = ? AND password = ?';
-    let params = [body.email_address, body.password];
+    let query_str = 'SELECT * FROM `users` WHERE email_address = ?';
+    let params = [body.email_address];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
         reject({'error': error})
       }
       else {
-        resolve({'message': results});
+        bcrypt.compare(body.password, results[0].password, (error, _) => {
+          if(error){
+            reject({'error': error});
+          }
+          else {
+            resolve({'message': results});
+          }
+        });
       }
     })
   });

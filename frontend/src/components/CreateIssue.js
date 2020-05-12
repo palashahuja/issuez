@@ -4,6 +4,7 @@ import { withRouter, useHistory } from 'react-router';
 import constants from '../constants';
 import '../App.css';
 import UserContext from './UserContext';
+import AlertContextProvider from './AlertContext';
 
 
 
@@ -21,6 +22,7 @@ const CreateIssuePage = (props) => {
     const [description, setDescription] = useState(' ');
     const [actualStatus, setStatus] = useState('NULL');
     const [currentStatus, setCurrentStatus] = useState('');
+    const displayMessage = useContext(AlertContextProvider).showMessage;
     // history object
     const history = useHistory();
 
@@ -80,6 +82,14 @@ const CreateIssuePage = (props) => {
         <Col>
             <Button color='primary' onClick={() => {
                 // create body for post request 
+                if(title === ''){
+                    displayMessage('title cannot be empty!');
+                    return;
+                }
+                if(description === ''){
+                    displayMessage('description cannot be empty!');
+                    return;
+                }
                 if(issueid === undefined){
                     let post_body_req = {
                         'title': title,
@@ -106,7 +116,7 @@ const CreateIssuePage = (props) => {
                     let put_body_request = {
                         'title': title,
                         'description': description,
-                        'status': currentStatus,
+                        'status': currentStatus === undefined ? actualStatus : currentStatus,
                         'project_id': projectid
                     }
                     console.log(put_body_request);
@@ -118,6 +128,7 @@ const CreateIssuePage = (props) => {
                     fetch(constants.LOCALHOST_URL + 'issues/' + issueid, putRequestOptions)
                     .then(res => res.json())
                     .then(result => {
+                        console.log(result);
                         history.push('/project/' + projectid);
                     })
                 }

@@ -1,4 +1,4 @@
-import bcrypt, { hash } from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 export const isNullOrUndefined = (str) => {
     return (!str || /^\s*$/.test(str));
 };

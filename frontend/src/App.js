@@ -1,12 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { Alert, Navbar, NavbarBrand } from 'reactstrap';
+import Cookies from "js-cookie";
+import React, { useContext, useState } from 'react';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import { Alert, Col, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 // import logo from './logo.svg';
 import './App.css';
 import AlertContextProvider from './components/AlertContext';
+import AssignUsers from './components/AssignUsers';
 import CreateIssuePage from './components/CreateIssue';
 import CreateProjectPage from './components/CreateProject';
+import EditProject from './components/EditProject';
 import IssuePage from './components/IssuePage';
 import MainPage from './components/MainPage';
 import ProjectPage from './components/ProjectPage';
@@ -15,12 +18,24 @@ import SignupPage from './components/SignupPage';
 import UserContext from './components/UserContext';
 
 function HeaderLayout(props) {
+  // see if the user is logged in, and if the user is then only show the log out button 
+  const userId = useContext(UserContext).userid;
+  // show the top link conditionally
+  let logOut = userId && <NavItem style={{ float: 'right', listStyleType: 'none'}}> <NavLink href="/login" onClick={() => { Cookies.remove("session") }}>
+    Logout
+  </NavLink></NavItem>;
   return (<div>
     <div className="container-fluid-nav text-center">
-      <Navbar color="dark" dark style={{ display: 'block' }}>
-        <NavbarBrand><h1 className="HeaderFontFamily">Issuez</h1></NavbarBrand>
-      </Navbar>
-      {props.children}
+        <Navbar color="dark" dark >
+          <Col></Col>
+          <Col>
+            <NavbarBrand><h1 className="HeaderFontFamily">Issuez</h1></NavbarBrand>
+          </Col>
+          <Col>
+            {logOut}
+          </Col>
+        </Navbar>
+        {props.children}
     </div>
   </div>);
 }
@@ -32,12 +47,12 @@ const AlertMessage = ({ children }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [message, setMessage] = useState('');
   const [color, setColor] = useState('warning');
-  const showMessage = (message, color='warning') => {
+  const showMessage = (message, color = 'warning') => {
     setShowDialog(true); setMessage(message);
     setColor(color);
   }
   // close the dialog after 2s .
-  if(showDialog === true){
+  if (showDialog === true) {
     window.setTimeout(() => setShowDialog(false), 2000);
   }
   return (<>
@@ -51,11 +66,31 @@ const AlertMessage = ({ children }) => {
 }
 
 
+// handling login session by cookies 
+
+
+const getSessionCookie = () => {
+  const currentlyUserId = Cookies.get("session");
+  if (currentlyUserId === undefined) {
+    return '';
+  }
+  else {
+    return Cookies.get("session");
+  }
+}
+
+
 // create a global context for the currently authenticated user 
 const CurrentlyAuthenticatedUser = (props) => {
-  const [userId, setUserId] = useState(1);
+  const [userId, setUserId] = useState(getSessionCookie());
+  const setSessionCookie = (userid) => {
+    Cookies.remove("session");
+    Cookies.set("session", userid, { expires: 1 });
+    // also set user id here 
+    setUserId(userid);
+  }
   return (<>
-    <UserContext.Provider value={{userid: userId, setUserId: setUserId}}>
+    <UserContext.Provider value={{ userid: userId, setUserId: setSessionCookie }}>
       {props.children}
     </UserContext.Provider>
   </>)
@@ -65,10 +100,10 @@ const CurrentlyAuthenticatedUser = (props) => {
 function App() {
   return (
     <Router>
-      <HeaderLayout>
-        <AlertMessage>
-          <Switch>
-            <CurrentlyAuthenticatedUser>
+      <CurrentlyAuthenticatedUser>
+        <HeaderLayout>
+          <AlertMessage>
+            <Switch>
               <Route exact path="/dashboard">
                 <MainPage />
               </Route>
@@ -87,17 +122,29 @@ function App() {
               <Route path="/issue/:issueid">
                 <IssuePage />
               </Route>
+              <Route path="/assign/issue/:issueid">
+                <AssignUsers assign='issue' />
+              </Route>
+              <Route path="/assign/project/:projectid">
+                <AssignUsers assign='project' />
+              </Route>
               <Route exact path="/project/:projectid/issue/:issueid">
                 <CreateIssuePage />
               </Route>
               <Route exact path="/project/:projectid/issue">
                 <CreateIssuePage />
               </Route>
-              {/* <Redirect from="/" exact to="/login" /> */}
-            </CurrentlyAuthenticatedUser>
-          </Switch>
-        </AlertMessage>
-      </HeaderLayout>
+              <Route exact path="/project/:projectid/edit">
+                <EditProject />
+              </Route>
+              <Route exact path="/">
+                {getSessionCookie() === '' && <Redirect to="/login" />}
+                {getSessionCookie() !== '' && <Redirect to="/dashboard" />}
+              </Route>
+            </Switch>
+          </AlertMessage>
+        </HeaderLayout>
+      </CurrentlyAuthenticatedUser>
     </Router>
   );
 }

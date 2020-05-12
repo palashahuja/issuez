@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react'
-import constants from '../constants';
-import { Row, Col, ListGroup, Button } from 'reactstrap';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
-import { withRouter } from 'react-router';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory, withRouter } from 'react-router';
+import { Breadcrumb, BreadcrumbItem, Button, Col, ListGroup, Row } from 'reactstrap';
 import '../App.css';
-import UserContext from './UserContext';
+import constants from '../constants';
 import CustomListComponent from './CustomListComponent';
-import { useHistory } from 'react-router'; 
+import UserContext from './UserContext';
 
 const useStyles = makeStyles((theme) => ({
     control: {
@@ -25,7 +24,7 @@ const fetchIssues = (issue_set, callback_fn) => {
         fetch(constants.LOCALHOST_URL + 'issues/' + element.issue_id)
             .then(res => res.json())
             .then(result => {
-                if(result.length === 0) correct_len--;
+                if (result.length === 0) correct_len--;
                 else {
                     issue_info.push(result[0]);
                 }
@@ -46,66 +45,94 @@ const ProjectPage = (props) => {
     // 3) ability to create new issues (if project lead)
     // 4) see active issues (it means that these are the issues that are assigned to somebody)
     const [isLead, setLead] = useState(false);
+    const [myIssues, setIssues] = useState([]);
 
     // history for going to create issues 
+    const history = useHistory();
     const classes = useStyles();
     const projectURL = constants.LOCALHOST_URL + 'project/' + projectid;
     // check if the current user is a lead of the current project 
     useEffect(() => {
-        if(projectid == null) return;
+        if (projectid == null) return;
         fetch(projectURL + '/lead/' + userid)
             .then(res => res.json())
             .then(result => {
-                setLead(true);
+                if (result['message'] === true) {
+                    setLead(true);
+                }
             })
     }, [projectid, projectURL, userid]);
 
     // setLead(true);
-    const history = useHistory();
+    // const history = useHistory();
+
+    // get the details of the project
+    const [projectDetails, setProjectDetails] = useState({});
+    useEffect(() => {
+        if (projectid == null) return;
+        fetch(projectURL)
+            .then(res => res.json())
+            .then(result => {
+                setProjectDetails(result[0]);
+            })
+    }, [projectid, projectURL]);
+
 
     const [unAssigned, setUnAssigned] = useState([]);
     // get the unassigned issues 
     useEffect(() => {
-        if (isLead) {
-            fetch(projectURL + '/issues/unassigned')
-                .then(res => res.json())
-                .then(result => {
-                    // setUnAssigned(result);
-                    fetchIssues(result, setUnAssigned);
-                });
-        }
-    }, [isLead, projectURL]);
+        fetch(projectURL + '/issues/unassigned')
+            .then(res => res.json())
+            .then(result => {
+                // setUnAssigned(result);
+                fetchIssues(result, setUnAssigned);
+            });
+    }, [projectURL]);
 
 
     const [assigned, setAssigned] = useState([]);
     // get the assigned issues 
     useEffect(() => {
-            fetch(projectURL + '/issues/assigned')
-                .then(res => res.json())
-                .then(result => {
-                    // setAssigned(result);
-                    fetchIssues(result, setAssigned);
-                })
+        fetch(projectURL + '/issues/assigned')
+            .then(res => res.json())
+            .then(result => {
+                // setAssigned(result);
+                fetchIssues(result, setAssigned);
+            })
     }, [projectURL, isLead]);
+
+    // get the assigned issues for the currently logged in user 
+    useEffect(() => {
+        if (userid === null) return;
+        fetch(constants.LOCALHOST_URL + 'issues/user/' + userid)
+            .then(res => res.json())
+            .then(result => {
+                // eslint-disable-next-line
+                result = result.filter((x) => x.project_id == projectid);
+                setIssues(result);
+            })
+    }, [userid, projectid])
 
     // should be able to assign leads
 
     let left_component = isLead ? <Grid className="w-90">
-        <Paper className={classes.control}>
+        <Col>
             <h1 className="HeaderFontFamily">Unassigned Issues</h1>
+        </Col>
+        <Paper className={classes.control} style={{ maxHeight: 400, overflow: 'auto' }}>
             <ListGroup>
                 {unAssigned.map((item, index) => (
-                    <CustomListComponent key={index} item={item} isassign={true}/>
+                    <CustomListComponent key={index} item={item} isassign={true} />
                 ))}
             </ListGroup>
         </Paper>
     </Grid> : null;
 
-    let left_len = isLead ? 6 : 0;
-    let right_len = isLead ? 6 : 12;
     let right_component = <Grid className="w-90">
-        <Paper className={classes.control}>
+        <Col>
             <h1 className="HeaderFontFamily">Assigned Issues</h1>
+        </Col>
+        <Paper className={classes.control} style={{ maxHeight: 400, overflow: 'auto' }}>
             <ListGroup>
                 {assigned.map((item, index) => (
                     <CustomListComponent key={index} item={item} />
@@ -115,16 +142,59 @@ const ProjectPage = (props) => {
     </Grid>;
     return (<div>
         <Row>
-            <Col sm={left_len}>
-                {left_component}
-            </Col>
-            <Col sm={right_len}>
-                {right_component}
+            <Col >
+                <Breadcrumb style={{backgroundColor: 'white'}}>
+                    <BreadcrumbItem active><a href="/dashboard">Dashboard</a></BreadcrumbItem>
+                </Breadcrumb>
             </Col>
         </Row>
-        <Row style={{marginTop: 10}}>
+        <Row>
             <Col>
-                <Button className='align-self-center' color='primary' onClick={() => {history.push('/project/' + projectid + '/issue/')}}>Create Issue</Button>
+                <h1 className="HeaderFontFamily">
+                    {projectDetails.name}
+                </h1>
+            </Col>
+        </Row>
+        <Row>
+            <Col>
+                {projectDetails.description}
+            </Col>
+        </Row>
+        <Row style={{ marginBottom: 20, marginTop: 20 }}>
+            <Col>
+                <Button className='align-self-center' color='primary' onClick={() => { history.push('/project/' + projectid + '/issue/') }}>Create Issue</Button>
+            </Col>
+            {isLead && <Col>
+                <Button className='align-self-center' color='primary' onClick={() => { history.push('/assign/project/' + projectid) }}>Assign Leads</Button>
+            </Col>}
+            {isLead && <Col>
+                <Button className='align-self-center' color='primary' onClick={() => { history.push('/project/' + projectid + '/edit/') }}>Edit Project</Button>
+            </Col>}
+        </Row>
+        <Row>
+            {unAssigned.length > 0 &&
+                <Col>
+                    {left_component}
+                </Col>}
+            {assigned.length > 0 &&
+                <Col>
+                    {right_component}
+                </Col>}
+        </Row>
+        <Row>
+            <Col>
+                <Grid className="w-90">
+                    <Col>
+                        <h1 className="HeaderFontFamily" style={{ marginTop: 10 }}>My Issues</h1>
+                    </Col>
+                    <Paper className={classes.control} style={{ maxHeight: 400, overflow: 'auto', marginTop: 10 }}>
+                        <ListGroup>
+                            {myIssues.map((item, index) => (
+                                <CustomListComponent key={index} item={item} />
+                            ))}
+                        </ListGroup>
+                    </Paper>
+                </Grid>
             </Col>
         </Row>
     </div>)
