@@ -308,6 +308,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       x-swagger-router-controller: Default
+  /project/search/{text}:
+    get:
+      description: gets all the projects that match search string '%text%'
+      operationId: getProjectSearch
+      parameters:
+      - name: text
+        in: path
+        description: the text string for which the details need to be searched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ProjectDetail'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
   /project/user/{userid}:
     get:
       description: returns the projects for which this particular user is a project lead

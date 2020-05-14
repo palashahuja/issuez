@@ -344,6 +344,28 @@ exports.getProjectDetails = function(projectid) {
 }
 
 /**
+ * gets all the projects that match search string '%text%'
+ *
+ * text String the text string for which the details need to be searched
+ * returns List
+ **/
+exports.getProjectSearch = function(text) {
+  return new Promise(function(resolve, reject) {
+    let text_wild = '%' + text + '%';
+    let query_str = 'SELECT * FROM `project` WHERE name LIKE ?';
+    let params = [text_wild]
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error});
+      }
+      else {
+        resolve(results);
+      }
+    })
+  });
+}
+
+/**
  * gets all the projects
  *
  * returns List

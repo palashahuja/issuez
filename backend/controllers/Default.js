@@ -202,3 +202,13 @@ module.exports.getUserDetails = function getUserDetails (req, res, next, userid)
       utils.writeJson(res, response);
     });
 };
+
+module.exports.getProjectSearch = function getProjectSearch (req, res, next, text) {
+  Default.getProjectSearch(text)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
