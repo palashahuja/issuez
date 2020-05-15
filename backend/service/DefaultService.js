@@ -575,7 +575,7 @@ exports.updateUserDetails = function(body,userid) {
     let params = [body.email_address, body.username, body.displayname, userid];
     Connection.query(query_str, params, (error, results, fields) => {
       if(error){
-        reject({'message': error})
+        reject({'error': error})
       }
       else {
         resolve({'message': 'inserted successfully'});

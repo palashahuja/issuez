@@ -16,26 +16,34 @@ import ProjectPage from './components/ProjectPage';
 import LoginPage from './components/SigninPage';
 import SignupPage from './components/SignupPage';
 import UserContext from './components/UserContext';
+import EditUserDetails from './components/EditUserDetails';
 
 function HeaderLayout(props) {
   // see if the user is logged in, and if the user is then only show the log out button 
   const userId = useContext(UserContext).userid;
   // show the top link conditionally
-  let logOut = userId && <NavItem style={{ float: 'right', listStyleType: 'none'}}> <NavLink href="/login" onClick={() => { Cookies.remove("session") }}>
-    Logout
-  </NavLink></NavItem>;
+  let logOut = userId && <><NavItem style={{ float: 'right', listStyleType: 'none' }}>
+    <NavLink href="/login" onClick={() => { Cookies.remove("session") }}>
+      Logout
+    </NavLink>
+  </NavItem>
+    <NavItem style={{ float: 'right', listStyleType: 'none' }}>
+      <NavLink href="/user">
+        Edit Profile
+     </NavLink>
+    </NavItem></>;
   return (<div>
     <div className="container-fluid-nav text-center">
-        <Navbar color="dark" dark >
-          <Col></Col>
-          <Col>
-            <NavbarBrand><h1 className="HeaderFontFamily">Issuez</h1></NavbarBrand>
-          </Col>
-          <Col>
-            {logOut}
-          </Col>
-        </Navbar>
-        {props.children}
+      <Navbar color="dark" dark >
+        <Col></Col>
+        <Col>
+          <NavbarBrand><h1 className="HeaderFontFamily">Issuez</h1></NavbarBrand>
+        </Col>
+        <Col>
+          {logOut}
+        </Col>
+      </Navbar>
+      {props.children}
     </div>
   </div>);
 }
@@ -100,7 +108,7 @@ const CurrentlyAuthenticatedUser = (props) => {
 function App() {
   // changes the title to Issuez
   useEffect(() => {
-   document.title = "Issuez"
+    document.title = "Issuez"
   }, []);
   return (
     <Router>
@@ -144,6 +152,9 @@ function App() {
               <Route exact path="/">
                 {getSessionCookie() === '' && <Redirect to="/login" />}
                 {getSessionCookie() !== '' && <Redirect to="/dashboard" />}
+              </Route>
+              <Route exact path="/user">
+                <EditUserDetails />
               </Route>
             </Switch>
           </AlertMessage>
