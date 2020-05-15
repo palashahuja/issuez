@@ -561,3 +561,25 @@ exports.updateProjectDetails = function(body,projectid) {
     })
   });
 }
+
+/**
+ * updates the details for the particular user
+ *
+ * body ProjectInputDetail  (optional)
+ * projectid String the user id for which the details need to be updated
+ * returns SuccessResponse
+ **/
+exports.updateUserDetails = function(body,userid) {
+  return new Promise(function(resolve, reject) {
+    let query_str = 'UPDATE `users` SET `email_address` = ?,`username` = ?, `displayname` = ? WHERE user_id = ?';
+    let params = [body.email_address, body.username, body.displayname, userid];
+    Connection.query(query_str, params, (error, results, fields) => {
+      if(error){
+        reject({'message': error})
+      }
+      else {
+        resolve({'message': 'inserted successfully'});
+      }
+    })
+  });
+}

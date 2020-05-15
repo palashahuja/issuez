@@ -212,3 +212,13 @@ module.exports.getProjectSearch = function getProjectSearch (req, res, next, tex
       utils.writeJson(res, response);
     });
 };
+
+module.exports.updateUserDetails = function updateUserDetails (req, res, next, body, userid) {
+  Default.updateUserDetails(body, userid)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};

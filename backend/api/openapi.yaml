@@ -560,6 +560,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       x-swagger-router-controller: Default
+  /users/edit/{userid}:
+    put:
+      description: updates the details for the particular user
+      operationId: updateUserDetails
+      parameters:
+      - name: userid
+        in: path
+        description: the user id for which the details need to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicUserDetail'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-swagger-router-controller: Default
   /users/{userid}:
     get:
       description: gets all public info on the user with the specified id
