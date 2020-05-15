@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Cookies from "js-cookie";
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { Alert, Col, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 // import logo from './logo.svg';
@@ -98,6 +98,10 @@ const CurrentlyAuthenticatedUser = (props) => {
 
 
 function App() {
+  // changes the title to Issuez
+  useEffect(() => {
+   document.title = "Issuez"
+  }, []);
   return (
     <Router>
       <CurrentlyAuthenticatedUser>
