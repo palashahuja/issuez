@@ -64,7 +64,7 @@ const SignUp = (props) => {
                     displayMessage('User already exists');
                 }
                 else {
-                    setUserId(result.userid);
+                    // setUserId(result.userid);
                     displayMessage('User signed up successfully!', 'info')
                     history.push('/login');
                 }
