@@ -42,6 +42,7 @@ const Login = () => {
             fetch(constants.LOCALHOST_URL + 'users/verify', postRequestOptions)
                 .then(res => res.json())
                 .then(result => {
+                    console.log(result);
                     if (('error' in result) || result.message.length <= 0 ){
                         displayMessage('Incorrect username or password');
                     }

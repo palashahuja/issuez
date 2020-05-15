@@ -1,7 +1,7 @@
 import React, { useRef, useContext } from "react";
 import AlertContext from './AlertContext';
 import { isNullOrUndefined, hashPassword, emailValidate } from './UtilityFunc'; 
-import UserContext from "./UserContext";
+// import UserContext from "./UserContext";
 import constants from '../constants';
 import { useHistory } from "react-router";
 
@@ -12,7 +12,7 @@ const SignUp = (props) => {
     const displayName = useRef('');
     const password = useRef('');
     const history = useHistory();
-    const setUserId = useContext(UserContext).setUserId;
+    // const setUserId = useContext(UserContext).setUserId;
     const displayMessage = useContext(AlertContext).showMessage;
     const buttonClickEvent = async () =>  {
         // get all the current values 

@@ -460,6 +460,10 @@ exports.verifyUser = function(body) {
         reject({'error': error})
       }
       else {
+        if(results === undefined || results.length <= 0){
+          reject({'error': error});
+          return;
+        }
         bcrypt.compare(body.password, results[0].password, (error, _) => {
           if(error){
             reject({'error': error});
