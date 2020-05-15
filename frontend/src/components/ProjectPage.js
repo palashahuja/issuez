@@ -115,7 +115,7 @@ const ProjectPage = (props) => {
 
     // should be able to assign leads
 
-    let left_component = isLead ? <Grid className="w-90">
+    let left_component =  <Grid className="w-90">
         <Col>
             <h1 className="HeaderFontFamily">Unassigned Issues</h1>
         </Col>
@@ -126,7 +126,7 @@ const ProjectPage = (props) => {
                 ))}
             </ListGroup>
         </Paper>
-    </Grid> : null;
+    </Grid> ;
 
     let right_component = <Grid className="w-90">
         <Col>

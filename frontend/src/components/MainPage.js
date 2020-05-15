@@ -5,9 +5,9 @@
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, createRef } from 'react';
 import { useHistory } from 'react-router';
-import { Button, Col, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText } from 'reactstrap';
+import { Button, Col, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, InputGroup, InputGroupAddon, Input } from 'reactstrap';
 import '../App.css';
 import constants from '../constants';
 import UserContext from './UserContext';
@@ -66,6 +66,7 @@ const CustomProjectListComponent = (props) => {
 export default function MainPage(props) {
     const [project_list, setProjectList] = useState([]);
     const [all_project_list, setAllProjectList] = useState([]);
+    const searchText = createRef('');
     const userid = useContext(UserContext).userid;
     // history object 
     const history = useHistory();
@@ -92,9 +93,23 @@ export default function MainPage(props) {
             .then(res => res.json())
             .then(result => {
                 if ('message' in result) return;
+                // just show the top 5 projects here.
+                result = result.slice(0, 5);
                 setAllProjectList(result);
             })
     }, [userid]);
+
+
+    // create a function for the search 
+    const searchFunction = () => {
+        let text = searchText.current.value;
+        if(text === null ||text === undefined || text.length <= 0) setAllProjectList([]);
+        fetch(constants.LOCALHOST_URL + 'project/search/' + text)
+            .then(res => res.json())
+            .then(result => {
+                setAllProjectList(result);
+            })
+    }
 
     // return the project list
     return (
@@ -115,6 +130,13 @@ export default function MainPage(props) {
                 <Grid item xs={12}>
                     <Col>
                         <h1 className="HeaderFontFamily">All Projects</h1>
+                    </Col>
+                    <Col>
+                        <InputGroup>
+                                <Input innerRef={searchText}></Input>
+                                <InputGroupAddon addonType="prepend"><Button color='primary' onClick={() => searchFunction()}>Search</Button>
+                                </InputGroupAddon>
+                        </InputGroup>
                     </Col>
                     <Paper className={classes.control} style={{ maxHeight: 400, overflow: 'auto' }}>
                         <ListGroup>
