@@ -1,9 +1,9 @@
-import React, { useContext, createRef } from "react";
-import { emailValidate, hashPassword, isNullOrUndefined } from './UtilityFunc';
+import React, { createRef, useContext } from "react";
+import { useHistory } from "react-router";
+import constants from '../constants';
 import AlertContextProvider from "./AlertContext";
 import UserContext from "./UserContext";
-import constants from '../constants';
-import { useHistory } from "react-router";
+import { emailValidate, isNullOrUndefined } from './UtilityFunc';
 
 
 const Login = () => {
@@ -28,32 +28,28 @@ const Login = () => {
             return;
         }
 
-        hashPassword(currentPassword, (encryptedVal) => {
-            let post_body_req =
-            {
-                'email_address': currentEmail,
-                'password': encryptedVal
-            }
-            const postRequestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(post_body_req)
-            }
-            fetch(constants.LOCALHOST_URL + 'users/verify', postRequestOptions)
-                .then(res => res.json())
-                .then(result => {
-                    console.log(result);
-                    if (('error' in result) || result.message.length <= 0 ){
-                        displayMessage('Incorrect username or password');
-                    }
-                    else {
-                        setUserId(result.message[0].user_id);
-                        displayMessage('User signed in successfully!', 'info');
-                        history.push('/dashboard');
-                    }
-                });
-        })
-
+        let post_body_req =
+        {
+            'email_address': currentEmail,
+            'password':currentPassword 
+        }
+        const postRequestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(post_body_req)
+        }
+        fetch(constants.LOCALHOST_URL + 'users/verify', postRequestOptions)
+            .then(res => res.json())
+            .then(result => {
+                if (('error' in result) || result.message.length <= 0 ){
+                    displayMessage('Incorrect username or password');
+                }
+                else {
+                    setUserId(result.message[0].user_id);
+                    displayMessage('User signed in successfully!', 'info');
+                    history.push('/dashboard');
+                }
+        });
     }
     return (
         <div className="auth-wrapper">
